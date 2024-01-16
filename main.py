@@ -1,5 +1,6 @@
 from input import data
-from time import sleep
+from math import gcd
+from functools import reduce
 
 
 def remove_bracket(string):
@@ -17,6 +18,13 @@ def parse_input(string):
     return [pattern, mapping]
 
 
+def lcm(numbers):
+    def lcm_of_two(a, b):
+        return a * b // gcd(a, b)
+
+    return reduce(lcm_of_two, numbers, 1)
+
+
 def find_step_count(string):
     pattern, mapping = parse_input(string)
     step_count = 0
@@ -32,27 +40,23 @@ def find_step_count(string):
 
 def find_parallel_step_count(string):
     pattern, mapping = parse_input(string)
-    step_count = 0
-    # current_steps = [key for key in mapping.keys() if key[2] == 'A']
-    # while not all(s == 'ZZZ' for s in current_steps):
-    #     print(current_steps)
-    #     for p in pattern:
-    #         current_steps = [mapping[step][int(p)] if step != 'ZZZ' else 'ZZZ' for step in current_steps]
-    #         step_count += 1
-    #
-    # print(step_count)
-    # print(current_steps)
-    current_step = [key for key in mapping.keys() if key[2] == 'A'][2]
+    step_counts = []
+    start_nodes = [key for key in mapping.keys() if key[2] == 'A']
 
-    while current_step != 'ZZZ':
-        for p in pattern:
-            print(p)
-            current_step = mapping[current_step][int(p)]
-            print(current_step)
-            step_count += 1
+    for n in start_nodes:
+        step_count = 0
+        current_step = n
 
-    print(step_count)
+        while current_step[2] != 'Z':
+            for p in pattern:
+                current_step = mapping[current_step][int(p)]
+                step_count += 1
+
+        step_counts.append(step_count)
+
+    print(lcm(step_counts))
+
 
 if __name__ == '__main__':
-    # find_step_count(data)
+    find_step_count(data)
     find_parallel_step_count(data)
